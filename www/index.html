@@ -28,6 +28,7 @@
       import { DRACOLoader } from './js/three-dracoloader.min.js';
       import { GLTFLoader } from './js/three-gltfloader.min.js';
       import { DeviceOrientationController } from './js/three-deviceorientation.js';
+      import { VRButton } from './js/three-vrbutton.min.js';
 
       if( !WebGL.isWebGLAvailable() ) {
         // TODO: Implement simple welcome screen if webgl is not supported
@@ -42,11 +43,16 @@
         camera.lookAt( 0, 0, 0 );
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.xr.enabled = true;
         document.body.appendChild(renderer.domElement);
 
+        // Adding VRButton to indicate VR support
+        document.body.appendChild(VRButton.createButton(renderer));
+
         // Slightly rotate camera on mouse move
-        const controls = new DeviceOrientationController( camera, renderer.domElement );
+        const controls = new DeviceOrientationController(camera, renderer.domElement);
 
         // Load the model
         const dracoLoader = new DRACOLoader();
@@ -91,7 +97,7 @@
           renderingOutline = false;
         };
 
-        animate();
+        renderer.setAnimationLoop(render);
 
         function toonMaterial(obj) {
           // Replaces material to toon shading saving the color of original material
@@ -108,8 +114,9 @@
           camera.updateProjectionMatrix();
           renderer.setSize(window.innerWidth, window.innerHeight);
         };
-        function animate() {
-          requestAnimationFrame(animate);
+
+        function render() {
+          //requestAnimationFrame(animate);
 
           controls.update();
 
