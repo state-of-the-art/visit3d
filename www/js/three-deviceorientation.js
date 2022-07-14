@@ -12,11 +12,12 @@ class DeviceOrientationController extends EventDispatcher {
 
     this.object = object;
     this.element = domElement || document;
-    this.origQuat = this.object.quaternion.clone();
+    var origQuat = this.object.quaternion.clone();
 
     this.freeze = true;
 
     this.enableManualDrag = true; // enable manual user drag override control by default
+    this.multiplier = 0.2;
 
     this.deviceOrientation = {};
     this.screenOrientation = window.orientation || 0;
@@ -86,8 +87,8 @@ class DeviceOrientationController extends EventDispatcher {
       startY = currentY = window.innerHeight/2;
 
       // Set consistent scroll speed based on current viewport width/height
-      scrollSpeedX = ( 1200 / window.innerWidth ) * 0.2;
-      scrollSpeedY = ( 800 / window.innerHeight ) * 0.2;
+      scrollSpeedX = ( 1200 / window.innerWidth ) * this.multiplier;
+      scrollSpeedY = ( 800 / window.innerHeight ) * this.multiplier;
 
       this.element.removeEventListener( 'mousemove', this.onDocumentMouseMoveInit, false );
       this.element.addEventListener( 'mousemove', this.onDocumentMouseMove, false );
@@ -118,8 +119,8 @@ class DeviceOrientationController extends EventDispatcher {
           startY = currentY = event.touches[ 0 ].pageY;
 
           // Set consistent scroll speed based on current viewport width/height
-          scrollSpeedX = ( 1200 / window.innerWidth ) * 0.2;
-          scrollSpeedY = ( 800 / window.innerHeight ) * 0.2;
+          scrollSpeedX = ( 1200 / window.innerWidth ) * this.multiplier;
+          scrollSpeedY = ( 800 / window.innerHeight ) * this.multiplier;
 
           this.element.addEventListener( 'touchmove', this.onDocumentTouchMove, false );
           this.element.addEventListener( 'touchend', this.onDocumentTouchEnd, false );
@@ -191,8 +192,8 @@ class DeviceOrientationController extends EventDispatcher {
         objQuat.copy( tmpQuat );
 
         if ( appState === CONTROLLER_STATE.MANUAL_ROTATE ) {
-          lat = ( startY - currentY ) * scrollSpeedY;
-          lon = ( startX - currentX ) * scrollSpeedX;
+          lat = -( startY - currentY ) * scrollSpeedY;
+          lon = -( startX - currentX ) * scrollSpeedX;
 
           phi   = MathUtils.degToRad( lat );
           theta = MathUtils.degToRad( lon );
@@ -213,8 +214,8 @@ class DeviceOrientationController extends EventDispatcher {
           rotQuat.set( 0, 0, Math.sin( ( realZ - objZ  ) / 2 ), Math.cos( ( realZ - objZ ) / 2 ) );
           objQuat.multiply( rotQuat );
 
-          //this.object.quaternion.slerp( objQuat, 0.02 ); // smoothing
-          this.object.quaternion.copy( objQuat );
+          this.object.quaternion.slerp( objQuat, 0.02 ); // smoothing
+          //this.object.quaternion.copy( objQuat );
         }
       };
     }();
@@ -243,17 +244,21 @@ class DeviceOrientationController extends EventDispatcher {
           deviceQuat.multiply(initDeviceQuat);
           deviceQuat.normalize();
 
+          // Limit the rotation (poor version, but allows free rotation in screen plane)
+          deviceQuat.set(deviceQuat.x, deviceQuat.y*0.1, deviceQuat.z*0.1, deviceQuat.w);
+          deviceQuat.normalize();
+
           // Restore the device rotation - when it was multiplied to inverted it's getting a bit weird
           oldx = deviceQuat.x;
           deviceQuat.x = -deviceQuat.z;
           deviceQuat.z = oldx;
 
           // Getting copy of the original camera quaternion and apply the reset device rotation
-          tmpQuat = this.origQuat.clone();
+          tmpQuat = origQuat.clone();
           tmpQuat.multiply(deviceQuat);
           tmpQuat.normalize();
-          //this.object.quaternion.slerp( tmpQuat, 0.02 ); // smoothing
-          this.object.quaternion.copy( tmpQuat );
+          this.object.quaternion.slerp( tmpQuat, 0.02 ); // smoothing
+          //this.object.quaternion.copy( tmpQuat );
         }
       };
 
@@ -269,7 +274,7 @@ class DeviceOrientationController extends EventDispatcher {
 
     this.connect = function () {
       initDeviceQuat = null
-      this.origQuat = this.object.quaternion.clone();
+      origQuat = this.object.quaternion.clone();
 
       window.addEventListener( 'orientationchange', this.onScreenOrientationChange, false );
       window.addEventListener( 'deviceorientation', this.onDeviceOrientationChange, false );
@@ -293,6 +298,10 @@ class DeviceOrientationController extends EventDispatcher {
       this.element.removeEventListener( 'mousemove', this.onDocumentMouseMoveInit, false );
       this.element.removeEventListener( 'mousemove', this.onDocumentMouseMove, false );
       this.element.removeEventListener( 'touchstart', this.onDocumentTouchStart, false );
+    };
+
+    this.setRotationMultiplier = function(multiplier) {
+      this.multiplier = multiplier;
     };
   }
 };
