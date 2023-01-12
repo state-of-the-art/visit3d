@@ -1,0 +1,41 @@
+﻿{{define "document"}}
+<p class="header">Dear {{ .UserName | html }}!</p>
+<p style="text-align:center;">This is an example of marriage invitation of</p>
+<div class="bridegroom">Bride and Groom</div>
+<p style="text-align:center;">(you can contact <a href="https://www.state-of-the-art.io">State Of The Art LLC</a> to get your own 3d site)</p>
+<p>We hope you will join us on <b>%DAY%, %DATE% at %TIME% PM</b> at
+  <div style="text-align:center;">
+    <a class="regulartext" href="https://www.example.com/" target="_blank">Example Venue</a><br/>
+    <a class="regulartext" href="https://map-link.com/" target="_blank">%STREET ADDRESS%,<br/>%CITY%, %STATE% %POST_INDEX%</a>.
+  </div>
+</p>
+<p class="header">People in charge</p>
+<p>These folks were so generous to help us with organization, so please don't hesitate to ask them if you find yourself confused:</p>
+<ul>
+  <li><b>%NAME%</b> and <b>%NAME%</b> - greeters, will welcome the guests at the %PLACE% upon arrival</li>
+  <li><b>%NAME%</b> - an officiant, will perform the ceremony</li>
+  <li><b>%NAME%</b> - a wedding general, will resolve any issues</li>
+  <li><b>%NAME%</b> - event manager, will help with additional questions regarding the %TITLE% venue</li>
+</ul>
+<p class="header">Dress code</p>
+<p>Dress to impress! Our color palette is dusty rose, champaign, and amethyst. Please indulge us by dressing in these colors, if you don't mind.</p>
+<div style="text-align:center;">
+  <img width="180" src="img/gosse_color_plain.svg"/>
+  <div style="display: inline-block">
+    <div class="colorbar" style="background:linear-gradient(to bottom, #8a668c 0% 50%, rgba(0, 0, 0, 0) 100%);"></div>
+    <div class="colorbar" style="background:linear-gradient(to bottom, #d0afc0 0% 50%, rgba(0, 0, 0, 0) 100%);"></div>
+    <div class="colorbar" style="background:linear-gradient(to bottom, #d8aeb7 0% 50%, rgba(0, 0, 0, 0) 100%);"></div>
+    <div class="colorbar" style="background:linear-gradient(to bottom, #efd6dc 0% 50%, rgba(0, 0, 0, 0) 100%);"></div>
+    <div class="colorbar" style="background:linear-gradient(to bottom, #b1bdca 0% 50%, rgba(0, 0, 0, 0) 100%);"></div>
+    <div class="colorbar" style="background:linear-gradient(to bottom, #fffb8b 0% 50%, rgba(0, 0, 0, 0) 100%);"></div>
+  </div>
+</div>
+<p class="header">Venue rules</p>
+<p>It's really important to read and understand the Venue rules - because they are enforced with fines: <a class="regulartext" href="https://example.com/rules/" target="_blank">example.com/rules</a></p>
+<p class="header">Additional Details</p>
+<p>Our ceremony starts at %TIME% PM. Please arrive at the venue at %TIME%. Not to be late, please keep in mind that traffic on %DAY% could be super busy.</p>
+<p>Unfortunately, as our Venue is not suitable for kids, this will be an adult only reception. Thank you for understanding!</p>
+<p>Sad to say, but Uber/Lift are not available in the Venue area, so please plan accordingly. It's allowed to leave the car overnight on the parking lot, however you will need to find your ride buddy in advance.</p>
+<p>Your presence at our wedding is present enough, but if we're honored with a gift from you, a monetary gift will be very much appreciated.</p>
+<p>WIP: The additional important things (like sitting chart, food preferences, the venue map...) will be added here later and we will notify you on appearance and you will make your choices.</p>
+{{end}}

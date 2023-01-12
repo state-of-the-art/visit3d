@@ -1,0 +1,100 @@
+html, body {
+  scroll-behavior: smooth;
+  background-color: #000000;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#canvasParent,#renderCanvas {
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+
+/* Document style */
+
+@font-face {
+  font-family: aramis;
+  src: url(../fonts/aramis.ttf);
+}
+#scrollDocument {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: aramis;
+  font-size: 36px;
+}
+@font-face {
+  font-family: LucySaidOk;
+  src: url(../fonts/LucySaidOk.ttf);
+}
+.header {
+  font-family: LucySaidOk;
+  font-size: 75px;
+  text-align: center;
+}
+@font-face {
+  font-family: chopinscript;
+  src: url(../fonts/chopinscript.ttf);
+}
+.bridegroom {
+  font-family: chopinscript;
+  font-size: 120px;
+  text-align: center;
+  width: 90%;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+.regulartext {
+  color: inherit;
+  text-decoration: inherit;
+}
+.colorbar {
+  display: inline-block;
+  height: 320px;
+  width: 80px;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+#scrollDocument::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+#scrollDocument {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+
+/* Additional styles */
+
+#errorContainer {
+  z-index: 999;
+  color: #D8000C;
+  background-color: #FFBABA;
+  padding: 5px;
+  position: absolute;
+  opacity: 0.9;
+  left: 5px;
+  top: 5px;
+}
+
+#copyright {
+  z-index: 999;
+  color: #fff;
+  padding: 5px;
+  position: absolute;
+  opacity: 0.2;
+  right: 5px;
+  bottom: 5px;
+  font-weight: bold;
+}
+
+/* Override default width of the loading image */
+#babylonjsLoadingDiv img,#babylonjsLoadingDiv div:last-child {
+  width: 200px !important;
+}
