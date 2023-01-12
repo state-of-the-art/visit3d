@@ -1,0 +1,5 @@
+/visit3d
+private_key.json
+.venv
+/templates/document.html
+/static/*.glb
