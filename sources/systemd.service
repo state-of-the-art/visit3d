@@ -1,0 +1,17 @@
+[Unit]
+Description=Run http visit3d service as unprevileged user
+After=network.target
+
+[Service]
+Type=simple
+User=visit3d-http
+Group=visit3d-http
+WorkingDirectory=/srv/visit3d
+ExecStart=/srv/visit3d/visit3d :8888 https://site.org/
+TimeoutStartSec=0
+Restart=on-failure
+
+LimitNOFILE=10240
+
+[Install]
+WantedBy=default.target
