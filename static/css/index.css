@@ -51,7 +51,6 @@ html, body {
 }
 .regulartext {
   color: inherit;
-  text-decoration: inherit;
 }
 .colorbar {
   display: inline-block;
