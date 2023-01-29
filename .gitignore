@@ -1,5 +1,7 @@
 /visit3d
+/save_dir
 private_key.json
 .venv
 /templates/document.html
 /static/*.glb
+/static/img/bride_and_groom.svg

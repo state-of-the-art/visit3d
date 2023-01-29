@@ -2,6 +2,7 @@
 <p class="header">Dear {{ .UserName | html }}!</p>
 <p style="text-align:center;">This is an example of marriage invitation of</p>
 <div class="bridegroom">Bride and Groom</div>
+<!--img class="bridegroom" src="img/bride_and_groom.svg"/-->
 <p style="text-align:center;">(you can contact <a href="https://www.state-of-the-art.io">State Of The Art LLC</a> to get your own 3d site)</p>
 <p>We hope you will join us on <b>%DAY%, %DATE% at %TIME% PM</b> at
   <div style="text-align:center;">
@@ -9,6 +10,7 @@
     <a class="regulartext" href="https://map-link.com/" target="_blank">%STREET ADDRESS%,<br/>%CITY%, %STATE% %POST_INDEX%</a>.
   </div>
 </p>
+
 <p class="header">People in charge</p>
 <p>These folks were so generous to help us with organization, so please don't hesitate to ask them if you find yourself confused:</p>
 <ul>
@@ -17,6 +19,7 @@
   <li><b>%NAME%</b> - a wedding general, will resolve any issues</li>
   <li><b>%NAME%</b> - event manager, will help with additional questions regarding the %TITLE% venue</li>
 </ul>
+
 <p class="header">Dress code</p>
 <p>Dress to impress! Our color palette is dusty rose, champaign, and amethyst. Please indulge us by dressing in these colors, if you don't mind.</p>
 <div style="text-align:center;">
@@ -30,12 +33,186 @@
     <div class="colorbar" style="background:linear-gradient(to bottom, #fffb8b 0% 50%, rgba(0, 0, 0, 0) 100%);"></div>
   </div>
 </div>
+
 <p class="header">Venue rules</p>
 <p>It's really important to read and understand the Venue rules - because they are enforced with fines: <a class="regulartext" href="https://example.com/rules/" target="_blank">example.com/rules</a></p>
+
 <p class="header">Additional Details</p>
 <p>Our ceremony starts at %TIME% PM. Please arrive at the venue at %TIME%. Not to be late, please keep in mind that traffic on %DAY% could be super busy.</p>
 <p>Unfortunately, as our Venue is not suitable for kids, this will be an adult only reception. Thank you for understanding!</p>
 <p>Sad to say, but Uber/Lift are not available in the Venue area, so please plan accordingly. It's allowed to leave the car overnight on the parking lot, however you will need to find your ride buddy in advance.</p>
 <p>Your presence at our wedding is present enough, but if we're honored with a gift from you, a monetary gift will be very much appreciated.</p>
-<p>WIP: The additional important things (like sitting chart, food preferences, the venue map...) will be added here later and we will notify you on appearance and you will make your choices.</p>
+
+<p class="header">Timeline</p>
+<style type="text/css">
+.time {
+  vertical-align: top;
+  padding-right: 20px;
+  font-weight: bold;
+}
+</style>
+<table>
+  {{/* Visible by guest with UserId 1 and 1000 */}}
+  {{ if or (eq .UserId 1) (eq .UserId 1000) }}<tr>
+    <td class="time">2:00</td>
+    <td>%NAME% helps Bride to change and prepare.<br/>
+      Groom and %NAME% setup items and checks the perimiter.</td>
+  </tr><tr>
+    <td class="time">2:30</td>
+    <td>First look at %PLACE%.</td>
+  </tr>{{ end -}}
+
+  {{/* Also visible by UserId 2 */}}
+  {{ if or (eq .UserId 1) (eq .UserId 2) (eq .UserId 1000) }}<tr>
+    <td class="time">3:20</td>
+    <td>Greeters at the %PLACE% welcomes the guests</td>
+  </tr>{{ end -}}
+
+  <tr>
+    <td class="time">3:30</td>
+    <td>Guests arrival begins</td>
+  </tr>
+  <tr>
+    <td class="time">4:00</td>
+    <td>Ceremony at %PLACE%</td>
+  </tr>
+  <tr>
+    <td class="time">4:30</td>
+    <td>Cocktail hour at %PLACE%</td>
+  </tr>
+  <tr>
+    <td class="time">6:00</td>
+    <td>Dinner at %PLACE%
+      <table>
+        <tr><td class="time">6:15</td><td>Grand Entrance: Newlyweds</td></tr>
+        <tr><td class="time">6:30</td><td>Plated dinner</td></tr>
+        <tr><td class="time">7:00</td><td>Toasts</td></tr>
+        <tr><td class="time">7:30</td><td>First dance / Open dancing</td></tr>
+        <tr><td class="time">8:30</td><td>Cake</td></tr>
+        <tr><td class="time">9:00</td><td>Bar closes</td></tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td class="time">9:45</td>
+    <td>Grand exit</td>
+  </tr>
+  {{/* Visible by guest with UserId 1, 2 and 1000 */}}
+  {{ if or (eq .UserId 1) (eq .UserId 2) (eq .UserId 1000) }}<tr>
+    <td class="time">10:00</td>
+    <td>All Guests Exited, load-out and clean up</td>
+  </tr><tr>
+    <td class="time">10:45</td>
+    <td>The party is over</td>
+  </tr>{{ end -}}
+</table>
+
+<p class="header">Questionary</p>
+<p>A couple of questions for you to make everything perfect:</p>
+<form>
+  <div>
+    <div>How certain you are to attend?</div>
+    <fieldset style="display:inline-block;border:0;">
+      <label style="display:block;"><input type="radio" name="certain" value="yes" /><span></span>100%</label>
+      <label style="display:block;"><input type="radio" name="certain" value="notsure" /><span></span>Not Sure</label>
+      <label style="display:block;"><input type="radio" name="certain" value="pass" /><span></span>Screw you guys, I'm staying home (pass)</label>
+    </fieldset>
+  </div>
+  {{/* Will be visible if the UserName contains "and your partner" */}}
+  {{ if contains .UserName "and your partner" }}
+  <label for="email">Your partner:</label><input id="q_partner" name="partner" placeholder="Name Surname"/>
+  {{ end }}
+  <div>
+    <p>Your preferred food:</p>
+    <fieldset style="display:inline-block;border:0;">
+      <label style="display:block;"><input type="radio" name="food1" value="meat" /><span></span>Meat</label>
+      <label style="display:block;"><input type="radio" name="food1" value="fish" /><span></span>Fish</label>
+      <label style="display:block;"><input type="radio" name="food1" value="plant" /><span></span>Plant</label>
+    </fieldset>
+    <fieldset style="display:inline-block;border:0;">
+      <label style="display:block;"><input type="radio" name="food2" value="meat" /><span></span>Meat</label>
+      <label style="display:block;"><input type="radio" name="food2" value="fish" /><span></span>Fish</label>
+      <label style="display:block;"><input type="radio" name="food2" value="plant" /><span></span>Plant</label>
+    </fieldset>
+  </div>
+  <div>
+    <div>Would you like to perform a toast? (We have a tight schedule and if you don't - it's ok)</div>
+    <fieldset style="display:inline-block;border:0;">
+      <label style="display:block;"><input type="radio" name="toast" value="yep" /><span></span>Yep</label>
+      <label style="display:block;"><input type="radio" name="toast" value="nop" /><span></span>Nope</label>
+    </fieldset>
+  </div>
+  <div>
+    <div>What songs do you want to dance to? (URL to youtube is the best)</div>
+    <center>
+      <textarea style="width:90%;text-align:left;resize:vertical;" name="songs_list"></textarea>
+    </center>
+  </div>
+  <div>
+    <p>Maybe something extra we can help with?</p>
+    <center>
+      <textarea style="width:90%;text-align:left;resize:vertical;" name="extra"></textarea>
+    </center>
+  </div>
+  <p>Don't forget to save your preferences (you can change them later):</p>
+  <button type="submit">Save preferences</button> <span id="saveResult"></span>
+</form>
+
+<p class="header">Dinner sitting chart</p>
+<div>WIP: Will be added a bit later.</div>
+
+<p class="header">Venue Map</p>
+<div>WIP: Will be added a bit later.</div>
+
+<script>
+// Script to handle submit button
+function handleSubmit(event) {
+  event.preventDefault()
+  const data = new FormData(event.target)
+  // Based on visit3d `DocumentBody` structure
+  const doc = { data: Object.fromEntries(data.entries()) }
+
+  const XHR = new XMLHttpRequest()
+  const result = document.querySelector('#saveResult')
+  XHR.onreadystatechange = function(event) {
+    if( XHR.readyState === 4 ) {
+      if( result ) {
+        if( XHR.status === 200 ) {
+          result.style = 'color:#060;'
+          result.textContent = 'Success: your preferences saved!'
+        } else {
+          result.style = 'color:#600;'
+          result.textContent = 'Oops! Something went wrong: ' + XHR.status + ' ' + XHR.statusText
+        }
+      } else {
+        if( XHR.status === 200 ) {
+          alert('Success: your preferences saved!')
+        } else {
+          alert('Oops! Something went wrong: ' + XHR.status + ' ' + XHR.statusText)
+        }
+      }
+    }
+  }
+  XHR.open('POST', 'save')
+  XHR.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
+  XHR.send(JSON.stringify(doc))
+}
+
+const form = document.querySelector('form');
+form.addEventListener('submit', handleSubmit);
+</script>
+
+<script>
+// Script to fill the form data out of latest saved one
+const saved_data = {{ .Data }}
+
+if( saved_data ) {
+  // Filling form with received data
+  const { elements } = document.querySelector('form')
+  for( const [ key, value ] of Object.entries(saved_data) ) {
+    const field = elements.namedItem(key)
+    field && (field.value = value)
+  }
+}
+</script>
 {{end}}

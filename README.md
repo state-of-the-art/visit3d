@@ -13,6 +13,7 @@ Visit3D is aimed to prepare a relatively simple starting point / example of crea
 * Supports JWE/JWT invite links for personalized messages through templating
 * Includes golang-based webserver for easy deployment
 * Relatively easily customizable
+* Able to save the form data and restore it
 
 ## Build & Run
 
@@ -34,6 +35,21 @@ Visit3D is aimed to prepare a relatively simple starting point / example of crea
    ./visit3d localhost:8888 http://localhost:8888/
    ```
 4. Go to http://localhost:8888/ and see the site
+
+### Save the user inputs
+
+In case document contains forms or other user inputs - users with token can actually click "save"
+and send the data to server to save it. It's useful for some preferences your wedding guests want
+to make (meal, music...). The data is saved in json format on the disk for further processing.
+
+In order to make this feaure work you will need to:
+1. Create the special directory with write access of the user under which visit3d server is running
+2. Add third option with path to the directory to visit3d arguments like that:
+   ```
+   ./visit3d localhost:8888 http://localhost:8888/ /path/to/save_dir
+   ```
+
+If third argument is not provided - save feature on server is disabled.
 
 ## Sending invites
 

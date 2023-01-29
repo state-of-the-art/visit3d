@@ -27,9 +27,13 @@ var onInitCompleted = function() {
     // WARNING: On mobile safari > 5000 and on android chromium > 8000 is too much and getting cut
     httpFrameInit('ScrollContent', scroll_doc, 5000, scene_ui)
 
+    // Used to detect if user scrolled
+    var user_scrolled = false
+
     // We need custom scrolling to deal with buggy one in firefox
     document.addEventListener('wheel', function(e) {
-      var scr = scroll_doc.scrollTop + (((e.deltaY / Math.abs(e.deltaY)) * (scroll_doc.clientHeight / 20)) || 0)
+      user_scrolled = true
+      var scr = scroll_doc.scrollTop + (((e.deltaY / Math.abs(e.deltaY)) * (scroll_doc.clientHeight / 10)) || 0)
       scroll_doc.scroll(0, scr)
     })
 
@@ -37,13 +41,23 @@ var onInitCompleted = function() {
     document.addEventListener('touchmove', function(e) {
       var deltaY = -event.changedTouches[0].pageY + touchY
       touchY = event.changedTouches[0].pageY
-      var scr = scroll_doc.scrollTop + (((deltaY / Math.abs(deltaY)) * (scroll_doc.clientHeight / 20)) || 0)
+      var scr = scroll_doc.scrollTop + (((deltaY / Math.abs(deltaY)) * (scroll_doc.clientHeight / 10)) || 0)
       scroll_doc.scroll(0, scr)
     })
     document.addEventListener('touchstart', function(e) {
+      user_scrolled = true
       // Placing initial y position of the touch
       touchY = event.changedTouches[0].pageY
     })
+
+    // Run autoscrolling if user doesn't scroll in 5 sec
+    function docScroll() {
+      if( !user_scrolled ) {
+        scroll_doc.scrollBy(0, 5)
+        setTimeout(docScroll, 100)
+      }
+    }
+    setTimeout(docScroll, 5000)
   })
   anim.play(false)
 }
