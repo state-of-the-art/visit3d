@@ -29,8 +29,9 @@ class CSS3DRenderer {
 
     this.cameraElement = document.createElement('div')
     this.isIE = (!!document['documentMode'] || /Edge/.test(navigator.userAgent) || /Edg/.test(navigator.userAgent))
+    this.isSafari = navigator.userAgent.toLowerCase().indexOf('safari/') > -1
 
-    if(!this.isIE) {
+    if( !this.isIE ) {
       this.cameraElement.style.webkitTransformStyle = 'preserve-3d'
       this.cameraElement.style.transformStyle = 'preserve-3d'
     }
@@ -40,6 +41,10 @@ class CSS3DRenderer {
     this.domElement.style.overflow = 'hidden'
     this.domElement.style.pointerEvents = 'none' // Pass the mouse events through the overlay
     this.domElement.appendChild(this.cameraElement)
+
+    // WORKAROUND: For Safari browsers (apple)
+    this.workaroundElement = document.createElement('div')
+    this.workaroundElement.style.position = 'absolute'
   }
 
   getSize() {
@@ -60,6 +65,17 @@ class CSS3DRenderer {
 
     this.cameraElement.style.width = width + 'px'
     this.cameraElement.style.height = height + 'px'
+
+    if( this.isSafari && this.cameraElement.childElementCount > 0 ) {
+      const rect = this.cameraElement.childNodes[0].getClientRects()[0]
+      this.workaroundElement.style.width = rect.width + 'px'
+      this.workaroundElement.style.height = rect.height + 'px'
+      this.workaroundElement.style.top = rect.top + 'px'
+      this.workaroundElement.style.left = rect.left + 'px'
+      if( this.workaroundElement.childElementCount > 0 ) {
+        this.workaroundElement.childNodes[0].style.zoom = rect.height / parseInt(this.cameraElement.childNodes[0].style.height)
+      }
+    }
   }
 
   epsilon(value) {
@@ -147,15 +163,16 @@ class CSS3DRenderer {
       var cachedObject = this.cache.objects.get( object )
 
       if( cachedObject === undefined || cachedObject.style !== style ) {
-          element.style.webkitTransform = style
-          element.style.transform = style
+        element.style.webkitTransform = style
+        element.style.transform = style
 
-          var objectData = { style: style }
+        var objectData = { style: style }
 
-          this.cache.objects.set( object, objectData )
+        this.cache.objects.set( object, objectData )
       }
       if( element.parentNode !== this.cameraElement ) {
-          this.cameraElement.appendChild( element )
+        this.cameraElement.appendChild( element )
+        this.setSize(this.width, this.height)
       }
 
     } else if ( object instanceof BABYLON.Scene ) {
@@ -169,8 +186,8 @@ class CSS3DRenderer {
     var projectionMatrix = camera.getProjectionMatrix()
     var fov = projectionMatrix.m[5] * this.heightHalf
 
-    if (this.cache.camera.fov !== fov) {
-      if (camera.mode == BABYLON.Camera.PERSPECTIVE_CAMERA ) {
+    if( this.cache.camera.fov !== fov ) {
+      if( camera.mode == BABYLON.Camera.PERSPECTIVE_CAMERA ) {
         this.domElement.style.webkitPerspective = fov + 'px'
         this.domElement.style.perspective = fov + 'px'
       } else {
@@ -180,7 +197,7 @@ class CSS3DRenderer {
       this.cache.camera.fov = fov
     }
 
-    if ( camera.parent === null ) camera.computeWorldMatrix()
+    if( camera.parent === null ) camera.computeWorldMatrix()
 
     var matrixWorld = camera.getWorldMatrix().clone()
     var rotation = matrixWorld.clone().getRotationMatrix().transpose()
@@ -225,7 +242,7 @@ var httpFrameInit = function(targetMesh, docElement, resolution, scene) {
   var target = scene.getMeshByName(targetMesh)
 
   // Setup the CSS renderer and object
-  let renderer = setupRenderer('canvasParent')
+  let renderer = setupRenderer('canvasParent', docElement)
 
   createCSSobject(targetMesh+"-html", target, scene, renderer, docElement, resolution)
 
@@ -261,10 +278,13 @@ var httpFrameInit = function(targetMesh, docElement, resolution, scene) {
   }
 }
 
-var setupRenderer = function(canvasParent) {
+var setupRenderer = function(canvasParent, docElement) {
+  let renderer = new CSS3DRenderer()
   var container = document.createElement('div')
   container.id = 'css-container'
-  container.style.pointerEvents = 'none' // Pass the mouse events through the overlay
+  if( !renderer.isSafari ) {
+    container.style.pointerEvents = 'none' // Pass the mouse events through the overlay
+  }
   container.style.position = 'absolute'
   container.style.left = '0px'
   container.style.top = '0px'
@@ -280,9 +300,17 @@ var setupRenderer = function(canvasParent) {
     canvasZone.appendChild(container)
   }
 
-  let renderer = new CSS3DRenderer()
   container.appendChild(renderer.domElement)
   renderer.setSize(canvasZone.offsetWidth, canvasZone.offsetHeight)
+
+  // WORKAROUND: On Safari complicated matrix3d transform for some reason
+  // doesn't allow to interact with the included element, so we're still
+  // producing it but only to get the client rect and to put document outside
+  // of transform. It will not give 3d, but for flat display will work fine.
+  if( renderer.isSafari ) {
+    renderer.workaroundElement.appendChild(docElement)
+    container.appendChild(renderer.workaroundElement)
+  }
 
   window.addEventListener('resize', e => {
     renderer.setSize(canvasZone.offsetWidth, canvasZone.offsetHeight)
@@ -304,7 +332,6 @@ var createCSSobject = function(name, mesh, scene, renderer, docElement, resoluti
   div.style.width = width * resolution + 'px'
   div.style.height = height * resolution + 'px'
   div.style.backgroundColor = '#0000'
-  //div.style.filter = 'blur(1px)' // To deal with no antialiasing of css matrix3d transform
   if( frameEmbedded )
     div.style.zIndex = '1'
 
@@ -315,7 +342,9 @@ var createCSSobject = function(name, mesh, scene, renderer, docElement, resoluti
   CSSobject.rotationQuaternion = mesh.rotationQuaternion
   CSSobject.scaling = mesh.scaling
 
-  div.appendChild(docElement)
+  if( !renderer.isSafari ) {
+    div.appendChild(docElement)
+  }
 
   if( frameEmbedded ) {
     // Enable the camera rotation on canvas after leaving the html frame
